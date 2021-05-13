@@ -1,0 +1,89 @@
+$media-breakpoints: (
+  xs: 0px,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+);
+
+@mixin media-breakpoint-up($name) {
+  $min: map-get($media-breakpoints, $name);
+
+  @if $min != 0px {
+    @media (min-width: $min) {
+      @content;
+    }
+  } @else {
+    @content;
+  }
+}
+
+@mixin generate-utility-classes($utilities) {
+  @each $utility, $options in $utilities {
+    $property: map-get($options, "property") or $utility;
+    $class: map-get($options, "class") or $utility;
+    $values: map-get($options, "values");
+
+    @each $value, $options in $values {
+      $name: map-get($options, "name") or $value;
+      $pseudo-classes: map-get($options, "pseudo-classes") or "";
+      $breakpoints: map-get($options, "breakpoints") or xs;
+
+      @each $breakpoint in $breakpoints {
+        @include media-breakpoint-up($breakpoint) {
+          $className: ".#{$class}";
+
+          @if $breakpoint != "xs" {
+            $className: "#{$className}-#{$breakpoint}";
+          }
+
+          $className: "#{$className}-#{$name}";
+
+          @each $pseudo-class in $pseudo-classes {
+            $className2: $className;
+
+            @if $pseudo-class != "" {
+              $className2: $className + "\\"+ $pseudo-class + $pseudo-class;
+            }
+
+            #{$className2} {
+              #{$property}: $value !important;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@include generate-utility-classes(
+  (
+    background: (
+      class: bg,
+      values: (
+        #efefef: (
+          name: 1,
+        ),
+        #7e7e7e: (
+          name: 2,
+          pseudo-classes: ":hover",
+        ),
+      ),
+    ),
+    height: (
+      class: h,
+      values: (
+        50px: (),
+      ),
+    ),
+    width: (
+      class: w,
+      values: (
+        100vw: (),
+        50vw: (
+          breakpoints: md,
+        ),
+      ),
+    ),
+  )
+);
