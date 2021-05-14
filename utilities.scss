@@ -20,7 +20,7 @@ $media-breakpoints: (
 
 @mixin generate-utility-classes($utilities) {
   @each $utility, $options in $utilities {
-    $property: map-get($options, "property") or $utility;
+    $properties: map-get($options, "properties") or $utility;
     $class: map-get($options, "class") or $utility;
     $values: map-get($options, "values");
 
@@ -47,7 +47,9 @@ $media-breakpoints: (
             }
 
             #{$className2} {
-              #{$property}: $value !important;
+              @each $property in $properties {
+                #{$property}: $value !important;
+              }
             }
           }
         }
@@ -58,7 +60,7 @@ $media-breakpoints: (
 
 @include generate-utility-classes(
   (
-    background: (
+    "background": (
       class: bg,
       values: (
         #efefef: (
@@ -70,19 +72,33 @@ $media-breakpoints: (
         ),
       ),
     ),
-    height: (
+    "height": (
       class: h,
       values: (
         50px: (),
       ),
     ),
-    width: (
+    "width": (
       class: w,
       values: (
         100vw: (),
         50vw: (
           breakpoints: md,
         ),
+      ),
+    ),
+    "padding-x": (
+      class: px,
+      properties: padding-left padding-right,
+      values: (
+        10px: (), 
+      ),
+    ),
+    "padding-y": (
+      class: py,
+      properties: padding-top padding-bottom,
+      values: (
+        15px: (),
       ),
     ),
   )
